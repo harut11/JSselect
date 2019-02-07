@@ -25,3 +25,23 @@
   }
 }
 /* Table Section End */
+
+/* Control Section Start */
+#controls {
+  width: 40%;
+  .item {
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    border-radius: 40%;
+    margin: 10px;
+    &.purple {
+      background-color: palevioletred;
+    }
+    &.green {
+      background-color: lightgreen;
+    }
+  }
+}
+/* Control Section End */

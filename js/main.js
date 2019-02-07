@@ -1,0 +1,4 @@
+let project = {
+    table: $('#table'),
+
+};
