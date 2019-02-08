@@ -20,25 +20,27 @@ let project = {
         project.table.mousedown((e1) =>{
             project.mousePositionX = e1.pageX;
             project.mousePositionY = e1.pageY;
-            console.log(project.mousePositionX, project.mousePositionY);
+            // console.log(project.mousePositionX, project.mousePositionY);
             html = '<div class="selectDiv"></div>';
             project.table.append(html);
 
             project.table.mouseover((event) => {
-                let eventDoc, doc, body;
+                // let eventDoc, doc, body;
 
-                if(event.pageX == null && event.clientX != null) {
-                    eventDoc = project.table;
-                    doc = eventDoc.documentElement;
-                    body = eventDoc.body;
-
-                    event.pageX = event.clientX + (doc && doc.scrollLeft || body && body.scrollLeft || 0) -
-                        (doc && doc.clientLeft || body && body.scrollLeft || 0);
-                    event.pageY = event.clientY + (doc && doc.scrollTop || body && body.scrollTop || 0) -
-                        (doc && doc.clientTop || body && body.clientTop || 0);
-                }
+                // if(event.pageX == null && event.clientX != null) {
+                //     eventDoc = project.table;
+                //     doc = eventDoc.documentElement;
+                //     body = eventDoc.body;
+                //
+                //     event.pageX = event.clientX + (doc && doc.scrollLeft || body && body.scrollLeft || 0) -
+                //         (doc && doc.clientLeft || body && body.scrollLeft || 0);
+                //     event.pageY = event.clientY + (doc && doc.scrollTop || body && body.scrollTop || 0) -
+                //         (doc && doc.clientTop || body && body.clientTop || 0);
+                // }
                 project.mouseNewPositionX = event.pageX;
                 project.mouseNewPositionY = event.pageY;
+                // console.log(project.mouseNewPositionX);
+                // console.log(project.mouseNewPositionY);
 
                 let div = $('.selectDiv'),
                     divWidth = (project.mouseNewPositionX - project.mousePositionX),
@@ -61,6 +63,18 @@ let project = {
                 }
                 if(project.mouseNewPositionY > project.mousePositionY) {
                     div.css('bottom', divBottom);
+                }
+            });
+        });
+
+        project.table.mouseup((e2) => {
+            let endPositionX = e2.pageX,
+                endPositionY = e2.pageY;
+
+            $.each($('.dinamicCell'), (key, value) => {
+                if($(value).position().top >= endPositionY || $(value).position().left >= endPositionX) {
+                    $(value).addClass('selected');
+                    console.log($(value).position().top);
                 }
             });
         });

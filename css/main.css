@@ -24,8 +24,8 @@
 #table .rows .cell.dinamicCell {
   border: 1px solid #fff;
 }
-#table .rows .cell.dinamicCell.blue {
-  background-color: #0c5460;
+#table .rows .cell.dinamicCell.selected {
+  background-color: deepskyblue;
 }
 #table .selectDiv {
   background-color: lightseagreen;

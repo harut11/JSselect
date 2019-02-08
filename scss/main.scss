@@ -20,8 +20,8 @@
       display: inline-block;
       &.dinamicCell {
         border: 1px solid #fff;
-        &.blue {
-          background-color: #0c5460;
+        &.selected {
+          background-color: deepskyblue;
         }
       }
     }
