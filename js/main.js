@@ -24,31 +24,19 @@ let project = {
             html = '<div class="selectDiv"></div>';
             project.table.append(html);
 
-            project.table.mouseover((event) => {
-                // let eventDoc, doc, body;
-
-                // if(event.pageX == null && event.clientX != null) {
-                //     eventDoc = project.table;
-                //     doc = eventDoc.documentElement;
-                //     body = eventDoc.body;
-                //
-                //     event.pageX = event.clientX + (doc && doc.scrollLeft || body && body.scrollLeft || 0) -
-                //         (doc && doc.clientLeft || body && body.scrollLeft || 0);
-                //     event.pageY = event.clientY + (doc && doc.scrollTop || body && body.scrollTop || 0) -
-                //         (doc && doc.clientTop || body && body.clientTop || 0);
-                // }
+            project.table.mousemove((event) => {
                 project.mouseNewPositionX = event.pageX;
                 project.mouseNewPositionY = event.pageY;
                 // console.log(project.mouseNewPositionX);
                 // console.log(project.mouseNewPositionY);
 
                 let div = $('.selectDiv'),
-                    divWidth = (project.mouseNewPositionX - project.mousePositionX),
+                    divWidth = project.mouseNewPositionX - project.mousePositionX,
                     divHeight = project.mouseNewPositionY - project.mousePositionY,
-                    divTop = project.mouseNewPositionY - project.table.position().top,
-                    divLeft = project.mouseNewPositionX - project.table.position().left,
-                    divRight = Math.abs(project.mouseNewPositionX - project.table.position().left - project.table.width()),
-                    divBottom = Math.abs(project.mouseNewPositionY - project.table.position().top - project.table.height());
+                    divTop = project.mouseNewPositionY - project.table.offset().top,
+                    divLeft = project.mouseNewPositionX - project.table.offset().left,
+                    divRight = Math.abs((project.mouseNewPositionX - project.table.position().left) - project.table.width()),
+                    divBottom = Math.abs((project.mouseNewPositionY - project.table.position().top) - project.table.height());
 
                 div.css('width', Math.abs(divWidth));
                 div.css('height', Math.abs(divHeight));
@@ -72,11 +60,15 @@ let project = {
                 endPositionY = e2.pageY;
 
             $.each($('.dinamicCell'), (key, value) => {
-                if($(value).position().top >= endPositionY || $(value).position().left >= endPositionX) {
+                if($(value).position().top >= (endPositionY - project.table.offset().top) && $(value).position().top < Math.abs(endPositionY - project.mousePositionY) && $(value).position().left >= (endPositionX - project.table.offset().left) && $(value).position().left < Math.abs(endPositionX - project.mousePositionX)) {
                     $(value).addClass('selected');
-                    console.log($(value).position().top);
+                }
+                if($(value).position().top >= (project.table.offset().top - endPositionY) && $(value).position().top < Math.abs(project.mousePositionY - endPositionY) && $(value).position().left >= (project.table.offset().left - endPositionX) && $(value).position().left < Math.abs(project.mousePositionX - endPositionX)) {
+                    $(value).addClass('selected');
                 }
             });
+            console.log(project.mousePositionX, project.mousePositionY);
+            console.log(endPositionX, endPositionY);
         });
 
         $(window).mouseup(() => {
@@ -84,6 +76,29 @@ let project = {
         });
 
     },
+
+    selectMethods: () => {
+        $(document).on('change', $('#selectAll'), () => {
+            $('.dinamicCell').toggleClass('selected');
+        }) ;
+
+        $('#purple').click(() => {
+            $.each($('.dinamicCell'), (key, value) => {
+                if($(value).hasClass('selected')) {
+                    $(value).removeClass('selected').toggleClass('purple');
+                }
+            })
+        });
+
+        $('#green').click(() => {
+            $.each($('.dinamicCell'), (key, value) => {
+                if($(value).hasClass('selected')) {
+                    $(value).removeClass('selected').toggleClass('green');
+                }
+            })
+        });
+    }
 };
 project.initDivs();
+project.selectMethods();
 project.drawSelect();
