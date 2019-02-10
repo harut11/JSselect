@@ -35,8 +35,8 @@ let project = {
                     divHeight = project.mouseNewPositionY - project.mousePositionY,
                     divTop = project.mouseNewPositionY - project.table.offset().top,
                     divLeft = project.mouseNewPositionX - project.table.offset().left,
-                    divRight = Math.abs((project.mouseNewPositionX - project.table.position().left) - project.table.width()),
-                    divBottom = Math.abs((project.mouseNewPositionY - project.table.position().top) - project.table.height());
+                    divRight = Math.abs((project.mouseNewPositionX - project.table.offset().left) - project.table.width()),
+                    divBottom = Math.abs((project.mouseNewPositionY - project.table.offset().top) - project.table.height());
 
                 div.css('width', Math.abs(divWidth));
                 div.css('height', Math.abs(divHeight));
@@ -60,15 +60,19 @@ let project = {
                 endPositionY = e2.pageY;
 
             $.each($('.dinamicCell'), (key, value) => {
-                if($(value).position().top >= (endPositionY - project.table.offset().top) && $(value).position().top < Math.abs(endPositionY - project.mousePositionY) && $(value).position().left >= (endPositionX - project.table.offset().left) && $(value).position().left < Math.abs(endPositionX - project.mousePositionX)) {
-                    $(value).addClass('selected');
+                let cellTop = $(value).position().top,
+                    cellLeft = $(value).position().left;
+                if(cellTop >= (endPositionY - (project.table.offset().top + 45)) && cellTop < (project.mousePositionY - project.table.offset().top) && cellLeft >= (endPositionX - (project.table.offset().left + 55)) && cellLeft < (project.mousePositionX - project.table.offset().left) || cellTop >= (endPositionY - (project.table.offset().top + 45)) && cellTop < (project.mousePositionY - project.table.offset().top) && cellLeft >= (project.mousePositionX - (project.table.offset().left + 55)) && cellLeft < (endPositionX - project.table.offset().left)) {
+                    if(!$(value).hasClass('purple') && !$(value).hasClass('green')) {
+                        $(value).addClass('selected');
+                    }
                 }
-                if($(value).position().top >= (project.table.offset().top - endPositionY) && $(value).position().top < Math.abs(project.mousePositionY - endPositionY) && $(value).position().left >= (project.table.offset().left - endPositionX) && $(value).position().left < Math.abs(project.mousePositionX - endPositionX)) {
-                    $(value).addClass('selected');
+                if(cellTop >= (project.mousePositionY - (project.table.offset().top + 45)) && cellTop < (endPositionY - project.table.offset().top) && cellLeft >= (endPositionX - (project.table.offset().left + 55)) && cellLeft < (project.mousePositionX - project.table.offset().left) || cellTop >= (project.mousePositionY - (project.table.offset().top + 45)) && cellTop < (endPositionY - project.table.offset().top) && cellLeft >= (project.mousePositionX - (project.table.offset().left + 55)) && cellLeft < (endPositionX - project.table.offset().left)) {
+                    if(!$(value).hasClass('purple') && !$(value).hasClass('green')) {
+                        $(value).addClass('selected');
+                    }
                 }
             });
-            console.log(project.mousePositionX, project.mousePositionY);
-            console.log(endPositionX, endPositionY);
         });
 
         $(window).mouseup(() => {
@@ -79,26 +83,40 @@ let project = {
 
     selectMethods: () => {
         $(document).on('change', $('#selectAll'), () => {
-            $('.dinamicCell').toggleClass('selected');
+            $.each($('.dinamicCell'), (key, value) => {
+                $(value).toggleClass('selected');
+                if($(value).hasClass('purple') || $(value).hasClass('green')) {
+                    $(value).toggleClass('selected');
+                }
+            })
         }) ;
 
         $('#purple').click(() => {
-            $.each($('.dinamicCell'), (key, value) => {
+            let cell = $('.dinamicCell');
+            $.each(cell, (key, value) => {
                 if($(value).hasClass('selected')) {
                     $(value).removeClass('selected').toggleClass('purple');
                 }
-            })
+            });
+            if($(cell).hasClass('green')) {
+                toastr.error('Cell(s) are already marked!');
+            }
         });
 
         $('#green').click(() => {
-            $.each($('.dinamicCell'), (key, value) => {
+            let cell = $('.dinamicCell');
+            $.each(cell, (key, value) => {
                 if($(value).hasClass('selected')) {
                     $(value).removeClass('selected').toggleClass('green');
                 }
-            })
+            });
+            if($(cell).hasClass('purple')) {
+                toastr.error('Cell(s) are already marked!');
+            }
         });
     }
 };
+toastr.options.closeButton = true;
 project.initDivs();
 project.selectMethods();
 project.drawSelect();
