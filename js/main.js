@@ -149,6 +149,64 @@ let project = {
             if(event.which === 17) {
                 ctrlPressed = true;
             }
+
+            if(shiftPressed) {
+                project.table.mousedown((event) => {
+                    let startSelectY = event.pageY,
+                        startSelectX = event.pageX,
+                        cell = JSON.parse(localStorage.getItem('cell'));
+
+                    if(!cell) {
+                        cell = [];
+                    }
+
+                    cell.push({
+                        selectY: startSelectY,
+                        selectX: startSelectX,
+                    });
+
+                    if(cell.length > 2) {
+                        return false;
+                    }
+
+                    localStorage.setItem('cell', JSON.stringify(cell));
+
+                    if(cell.length === 2) {
+                        let startSelectY = cell[0].selectY,
+                            startSelectX = cell[0].selectX,
+                            endSelectY = cell[1].selectY,
+                            endSelectX = cell[1].selectX,
+                            dinamicCell = $('.dinamicCell');
+
+                        $.each(dinamicCell, (key, value) => {
+                            let cellTop = $(value).position().top,
+                                cellLeft = $(value).position().left,
+                                cellsTop = dinamicCell.position().top,
+                                cellsLeft = dinamicCell.position().left;
+
+                            if(cellTop >= (endSelectY - (project.table.offset().top + cellsTop)) && cellTop < (startSelectY - project.table.offset().top) && cellLeft >= (endSelectX - (project.table.offset().left + cellsLeft)) && cellLeft < (startSelectX - project.table.offset().left) || cellTop >= (endSelectY - (project.table.offset().top + cellsTop)) && cellTop < (startSelectY - project.table.offset().top) && cellLeft >= (startSelectX - (project.table.offset().left + cellsLeft)) && cellLeft < (endSelectX - project.table.offset().left)) {
+                                if(!$(value).hasClass('purple') && !$(value).hasClass('green')) {
+                                    $(value).addClass('selected');
+                                }
+                                localStorage.removeItem('cell');
+                            }
+                            if(cellTop >= (startSelectY - (project.table.offset().top + cellsTop)) && cellTop < (endSelectY - project.table.offset().top) && cellLeft >= (endSelectX - (project.table.offset().left + cellsLeft)) && cellLeft < (startSelectX - project.table.offset().left) || cellTop >= (startSelectY - (project.table.offset().top + cellsTop)) && cellTop < (endSelectY - project.table.offset().top) && cellLeft >= (startSelectX - (project.table.offset().left + cellsLeft)) && cellLeft < (endSelectX - project.table.offset().left)) {
+                                if(!$(value).hasClass('purple') && !$(value).hasClass('green')) {
+                                    $(value).addClass('selected');
+                                }
+                                localStorage.removeItem('cell');
+                            }
+                        });
+                    }
+                });
+            }
+            if(ctrlPressed) {
+                $.each($('.dinamicCell'), (key, value) => {
+                    $(value).click(() => {
+                        $(value).addClass('selected');
+                    });
+                });
+            }
         }).keyup((event2) => {
             if(event2.which === 16) {
                 shiftPressed = false;
@@ -156,75 +214,12 @@ let project = {
             if(event2.which === 17) {
                 ctrlPressed = false;
             }
+            // if(!ctrlPressed) {
+            //     project.table.click(() => {
+            //        $('.dinamicCell').removeClass('selected');
+            //     });
+            // }
         });
-
-        if(shiftPressed) {
-            project.table.mousedown((event) => {
-                let startSelectY = event.pageY,
-                    startSelectX = event.pageX,
-                    cell = JSON.parse(localStorage.getItem('cell'));
-
-                if(!cell) {
-                    cell = [];
-                }
-
-                cell.push({
-                    selectY: startSelectY,
-                    selectX: startSelectX,
-                });
-
-                if(cell.length > 2) {
-                    return false;
-                }
-
-                localStorage.setItem('cell', JSON.stringify(cell));
-
-                if(cell.length === 2) {
-                    let startSelectY = cell[0].selectY,
-                        startSelectX = cell[0].selectX,
-                        endSelectY = cell[1].selectY,
-                        endSelectX = cell[1].selectX,
-                        dinamicCell = $('.dinamicCell');
-
-                    $.each(dinamicCell, (key, value) => {
-                        let cellTop = $(value).position().top,
-                            cellLeft = $(value).position().left,
-                            cellsTop = dinamicCell.position().top,
-                            cellsLeft = dinamicCell.position().left;
-
-                        if(cellTop >= (endSelectY - (project.table.offset().top + cellsTop)) && cellTop < (startSelectY - project.table.offset().top) && cellLeft >= (endSelectX - (project.table.offset().left + cellsLeft)) && cellLeft < (startSelectX - project.table.offset().left) || cellTop >= (endSelectY - (project.table.offset().top + cellsTop)) && cellTop < (startSelectY - project.table.offset().top) && cellLeft >= (startSelectX - (project.table.offset().left + cellsLeft)) && cellLeft < (endSelectX - project.table.offset().left)) {
-                            if(!$(value).hasClass('purple') && !$(value).hasClass('green')) {
-                                $(value).addClass('selected');
-                            }
-                            localStorage.removeItem('cell');
-                        }
-                        if(cellTop >= (startSelectY - (project.table.offset().top + cellsTop)) && cellTop < (endSelectY - project.table.offset().top) && cellLeft >= (endSelectX - (project.table.offset().left + cellsLeft)) && cellLeft < (startSelectX - project.table.offset().left) || cellTop >= (startSelectY - (project.table.offset().top + cellsTop)) && cellTop < (endSelectY - project.table.offset().top) && cellLeft >= (startSelectX - (project.table.offset().left + cellsLeft)) && cellLeft < (endSelectX - project.table.offset().left)) {
-                            if(!$(value).hasClass('purple') && !$(value).hasClass('green')) {
-                                $(value).addClass('selected');
-                            }
-                            localStorage.removeItem('cell');
-                        }
-                    });
-                }
-            });
-        }
-
-        // console.log(shiftPressed);
-
-        // if(project.ctrlPressed === true) {
-        //     $.each($('.dinamicCell'), (key, value) => {
-        //         $(value).click(() => {
-        //             $(value).addClass('selected');
-        //         });
-        //     });
-        // }
-        //
-        //
-        //     $.each($('.dinamicCell'), (key, value) => {
-        //         $(value).click(() => {
-        //             $(value).removeClass('selected');
-        //         });
-        //     })
     }
 };
 toastr.options.closeButton = true;
