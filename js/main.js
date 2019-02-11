@@ -1,3 +1,26 @@
+// sh = false;
+//
+// $(document).on('keydown', function(evt) {
+//    if (evt.which === 16) {
+//        sh = true;
+//    }
+// });
+// $(document).on('keyup', function(evt) {
+//    if (evt.which === 16) {
+//        sh = false;
+//    }
+// });
+//
+//
+// $(document).on('click', function() {
+//     if (sh) {
+//         console.log('shift click');
+//     } else {
+//         console.log('simple click');
+//     }
+// });
+
+
 let project = {
     table: $('#table'),
     dinamic: $('.dinamic'),
@@ -17,18 +40,15 @@ let project = {
     },
 
     drawSelect: () => {
-        project.table.mousedown((e1) =>{
+        project.table.mousedown((e1) => {
             project.mousePositionX = e1.pageX;
             project.mousePositionY = e1.pageY;
-            // console.log(project.mousePositionX, project.mousePositionY);
             html = '<div class="selectDiv"></div>';
             project.table.append(html);
 
             project.table.mousemove((event) => {
                 project.mouseNewPositionX = event.pageX;
                 project.mouseNewPositionY = event.pageY;
-                // console.log(project.mouseNewPositionX);
-                // console.log(project.mouseNewPositionY);
 
                 let div = $('.selectDiv'),
                     divWidth = project.mouseNewPositionX - project.mousePositionX,
@@ -57,17 +77,21 @@ let project = {
 
         project.table.mouseup((e2) => {
             let endPositionX = e2.pageX,
-                endPositionY = e2.pageY;
+                endPositionY = e2.pageY,
+                dinamicCell = $('.dinamicCell');
 
-            $.each($('.dinamicCell'), (key, value) => {
+            $.each(dinamicCell, (key, value) => {
                 let cellTop = $(value).position().top,
-                    cellLeft = $(value).position().left;
-                if(cellTop >= (endPositionY - (project.table.offset().top + 45)) && cellTop < (project.mousePositionY - project.table.offset().top) && cellLeft >= (endPositionX - (project.table.offset().left + 55)) && cellLeft < (project.mousePositionX - project.table.offset().left) || cellTop >= (endPositionY - (project.table.offset().top + 45)) && cellTop < (project.mousePositionY - project.table.offset().top) && cellLeft >= (project.mousePositionX - (project.table.offset().left + 55)) && cellLeft < (endPositionX - project.table.offset().left)) {
+                    cellLeft = $(value).position().left,
+                    cellsTop = dinamicCell.position().top,
+                    cellsLeft = dinamicCell.position().left;
+
+                if(cellTop >= (endPositionY - (project.table.offset().top + cellsTop)) && cellTop < (project.mousePositionY - project.table.offset().top) && cellLeft >= (endPositionX - (project.table.offset().left + cellsLeft)) && cellLeft < (project.mousePositionX - project.table.offset().left) || cellTop >= (endPositionY - (project.table.offset().top + cellsTop)) && cellTop < (project.mousePositionY - project.table.offset().top) && cellLeft >= (project.mousePositionX - (project.table.offset().left + cellsLeft)) && cellLeft < (endPositionX - project.table.offset().left)) {
                     if(!$(value).hasClass('purple') && !$(value).hasClass('green')) {
                         $(value).addClass('selected');
                     }
                 }
-                if(cellTop >= (project.mousePositionY - (project.table.offset().top + 45)) && cellTop < (endPositionY - project.table.offset().top) && cellLeft >= (endPositionX - (project.table.offset().left + 55)) && cellLeft < (project.mousePositionX - project.table.offset().left) || cellTop >= (project.mousePositionY - (project.table.offset().top + 45)) && cellTop < (endPositionY - project.table.offset().top) && cellLeft >= (project.mousePositionX - (project.table.offset().left + 55)) && cellLeft < (endPositionX - project.table.offset().left)) {
+                if(cellTop >= (project.mousePositionY - (project.table.offset().top + cellsTop)) && cellTop < (endPositionY - project.table.offset().top) && cellLeft >= (endPositionX - (project.table.offset().left + cellsLeft)) && cellLeft < (project.mousePositionX - project.table.offset().left) || cellTop >= (project.mousePositionY - (project.table.offset().top + cellsTop)) && cellTop < (endPositionY - project.table.offset().top) && cellLeft >= (project.mousePositionX - (project.table.offset().left + cellsLeft)) && cellLeft < (endPositionX - project.table.offset().left)) {
                     if(!$(value).hasClass('purple') && !$(value).hasClass('green')) {
                         $(value).addClass('selected');
                     }
@@ -114,6 +138,93 @@ let project = {
                 toastr.error('Cell(s) are already marked!');
             }
         });
+
+        let shiftPressed = false,
+            ctrlPressed = false;
+
+        $(window).keydown((event) => {
+            if(event.which === 16) {
+                shiftPressed = true;
+            }
+            if(event.which === 17) {
+                ctrlPressed = true;
+            }
+        }).keyup((event2) => {
+            if(event2.which === 16) {
+                shiftPressed = false;
+            }
+            if(event2.which === 17) {
+                ctrlPressed = false;
+            }
+        });
+
+        if(shiftPressed) {
+            project.table.mousedown((event) => {
+                let startSelectY = event.pageY,
+                    startSelectX = event.pageX,
+                    cell = JSON.parse(localStorage.getItem('cell'));
+
+                if(!cell) {
+                    cell = [];
+                }
+
+                cell.push({
+                    selectY: startSelectY,
+                    selectX: startSelectX,
+                });
+
+                if(cell.length > 2) {
+                    return false;
+                }
+
+                localStorage.setItem('cell', JSON.stringify(cell));
+
+                if(cell.length === 2) {
+                    let startSelectY = cell[0].selectY,
+                        startSelectX = cell[0].selectX,
+                        endSelectY = cell[1].selectY,
+                        endSelectX = cell[1].selectX,
+                        dinamicCell = $('.dinamicCell');
+
+                    $.each(dinamicCell, (key, value) => {
+                        let cellTop = $(value).position().top,
+                            cellLeft = $(value).position().left,
+                            cellsTop = dinamicCell.position().top,
+                            cellsLeft = dinamicCell.position().left;
+
+                        if(cellTop >= (endSelectY - (project.table.offset().top + cellsTop)) && cellTop < (startSelectY - project.table.offset().top) && cellLeft >= (endSelectX - (project.table.offset().left + cellsLeft)) && cellLeft < (startSelectX - project.table.offset().left) || cellTop >= (endSelectY - (project.table.offset().top + cellsTop)) && cellTop < (startSelectY - project.table.offset().top) && cellLeft >= (startSelectX - (project.table.offset().left + cellsLeft)) && cellLeft < (endSelectX - project.table.offset().left)) {
+                            if(!$(value).hasClass('purple') && !$(value).hasClass('green')) {
+                                $(value).addClass('selected');
+                            }
+                            localStorage.removeItem('cell');
+                        }
+                        if(cellTop >= (startSelectY - (project.table.offset().top + cellsTop)) && cellTop < (endSelectY - project.table.offset().top) && cellLeft >= (endSelectX - (project.table.offset().left + cellsLeft)) && cellLeft < (startSelectX - project.table.offset().left) || cellTop >= (startSelectY - (project.table.offset().top + cellsTop)) && cellTop < (endSelectY - project.table.offset().top) && cellLeft >= (startSelectX - (project.table.offset().left + cellsLeft)) && cellLeft < (endSelectX - project.table.offset().left)) {
+                            if(!$(value).hasClass('purple') && !$(value).hasClass('green')) {
+                                $(value).addClass('selected');
+                            }
+                            localStorage.removeItem('cell');
+                        }
+                    });
+                }
+            });
+        }
+
+        // console.log(shiftPressed);
+
+        // if(project.ctrlPressed === true) {
+        //     $.each($('.dinamicCell'), (key, value) => {
+        //         $(value).click(() => {
+        //             $(value).addClass('selected');
+        //         });
+        //     });
+        // }
+        //
+        //
+        //     $.each($('.dinamicCell'), (key, value) => {
+        //         $(value).click(() => {
+        //             $(value).removeClass('selected');
+        //         });
+        //     })
     }
 };
 toastr.options.closeButton = true;
