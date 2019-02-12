@@ -59,7 +59,6 @@ let project = {
                 local = JSON.parse(localStorage.getItem('local')),
                 cellDataid = $(e2.target).attr('data-id'),
                 rowDataId = $(e2.target).closest('.row').attr('data-id');
-            dinamicCell.removeClass('selected');
 
             if(!local) {
                 local = [];
@@ -158,9 +157,8 @@ let project = {
 
         $('body').on('click', (event) => {
             if(($(event.target).closest('.row').length) || event.target.id === "table") {
-                // return false;
+                return false;
             } else {
-                // $('.dinamicCell').removeClass('selected');
                 localStorage.removeItem('local');
             }
         });
@@ -168,10 +166,11 @@ let project = {
         $(document).on('click', '#table .dinamicCell', (event) => {
             let cells = $(event.target);
 
-            if(!ctrlPressed && !shiftPressed) {
+            if(!ctrlPressed || !shiftPressed) {
                 $('.dinamicCell').removeClass('selected');
                 cells.addClass('selected');
-            } else {
+            }
+            if(ctrlPressed) {
                 cells.addClass('selected');
             }
 
@@ -183,15 +182,16 @@ let project = {
                     endRowId = +cells.closest('.row').attr('data-id'),
                     endCellId = +cells.attr('data-id'),
                     dinamicCell = $('.dinamicCell');
+                    console.log(startRowId, startCellId);
 
                     $.each(dinamicCell, (key, value) => {
                         let valCellId = +$(value).attr('data-id'),
                             valRowId = +$(value).closest('.row').attr('data-id');
 
-                       if(valCellId > endCellId && valRowId === endRowId || valRowId > endRowId && valRowId < startRowId || valCellId < startCellId && valRowId === startRowId ) {
+                       if(valCellId > endCellId && valRowId === endRowId || valRowId > endRowId && valRowId < startRowId || valCellId < startCellId && valRowId === startRowId) {
                            $(value).addClass('selected');
                        }
-                       if(valCellId > endCellId && valRowId === endRowId || valRowId > startRowId && valRowId < endRowId || valCellId < startCellId && valRowId === startRowId) {
+                       if(valCellId < endCellId && valRowId === endRowId || valRowId > startRowId && valRowId < endRowId || valCellId > startCellId && valRowId === startRowId) {
                            $(value).addClass('selected');
                        }
                     });
