@@ -51,12 +51,15 @@ let project = {
             } else if(shiftPressed) {
                 cells.addClass('selected');
                 let cell = JSON.parse(localStorage.getItem('local')),
-                    lastItem = cell.length - 2,
-                    startRowId = +cell[lastItem].rowDataId,
-                    startCellId = +cell[lastItem].cellDataId,
+                    local2 = JSON.parse(localStorage.getItem('local2')),
+                    startRowId = +cell[cell.length - 2].rowDataId,
+                    startCellId = +cell[cell.length - 2].cellDataId,
+                    forShift = +local2[0].forShift,
                     endRowId = +cells.closest('.row').attr('data-id'),
                     endCellId = +cells.attr('data-id'),
                     dinamicCell = $('.dinamicCell');
+
+                console.log(startRowId, startCellId);
 
                 $.each(dinamicCell, (key, value) => {
                     let valCellId = +$(value).attr('data-id'),
@@ -68,24 +71,33 @@ let project = {
                             project.topShift.push([valRowId, valCellId]);
                             let arr1 = project.bottomShift.slice();
 
-                            for(let i = 0; i < arr1.length; i++) {
-                                let topRow = arr1[i][0],
-                                    topCell = arr1[i][1];
-
-                                $(project.getCell(topRow, topCell)).removeClass('selected');
+                            console.log(startRowId);
+                            if(valRowId > forShift) {
+                                $(value).removeClass('selected');
                             }
+                            // for(let i = 0; i < arr1.length; i++) {
+                            //     let topRow = arr1[i][0],
+                            //         topCell = arr1[i][1];
+                            //
+                            //     $(project.getCell(topRow, topCell)).removeClass('selected');
+                            // }
                             break;
                         case valCellId <= endCellId && valRowId === endRowId && startRowId < endRowId || valRowId > startRowId && valRowId < endRowId || valCellId >= startCellId && valRowId === startRowId && startRowId < endRowId:
                             $(value).addClass('selected');
                             project.bottomShift.push([valRowId, valCellId]);
                             let arr2 = project.topShift.slice();
 
-                            for(let i = 0; i < arr2.length; i++) {
-                                let topRow = arr2[i][0],
-                                    topCell = arr2[i][1];
-
-                                $(project.getCell(topRow, topCell)).removeClass('selected');
+                            console.log(startRowId);
+                            if(valRowId < forShift) {
+                                $(value).removeClass('selected');
                             }
+
+                            // for(let i = 0; i < arr2.length; i++) {
+                            //     let topRow = arr2[i][0],
+                            //         topCell = arr2[i][1];
+                            //
+                            //     $(project.getCell(topRow, topCell)).removeClass('selected');
+                            // }
                             break;
                         case valRowId === endRowId && valCellId > endCellId && valCellId < startCellId || valRowId === endRowId && valCellId >startCellId && valCellId < endCellId:
                             $(value).addClass('selected');
@@ -141,8 +153,14 @@ let project = {
                 endPositionY = e2.pageY,
                 dinamicCell = $('.dinamicCell'),
                 local = JSON.parse(localStorage.getItem('local')),
+                local2 = JSON.parse(localStorage.getItem('local2')),
                 cellDataid = $(e2.target).attr('data-id'),
-                rowDataId = $(e2.target).closest('.row').attr('data-id');
+                rowDataId = $(e2.target).closest('.row').attr('data-id'),
+                forShift = null;
+
+            if(!local2) {
+                local2 = [];
+            }
 
             if(!local) {
                 local = [];
@@ -153,7 +171,24 @@ let project = {
                 cellDataId: cellDataid
             });
 
+            if(!forShift) {
+                forShift = rowDataId;
+            }
+
+            local2.push({
+               forShift: forShift,
+            });
+
+            if(local.length > 2) {
+                local.shift();
+            }
+
+            if(local2.length > 1) {
+                local2.pop();
+            }
+
             localStorage.setItem('local', JSON.stringify(local));
+            localStorage.setItem('local2', JSON.stringify(local2));
 
             $.each(dinamicCell, (key, value) => {
                 let cellTop = $(value).position().top,
