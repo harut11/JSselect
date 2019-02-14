@@ -7,10 +7,9 @@ let project = {
     mouseNewPositionY: 0,
     topRow: null,
     topCell: null,
-    test: null,
 
     initDivs: () => {
-        html = '';
+        let html = '';
 
         for(let i = 1; i <= 19; i++) {
             html = '<div class="cell dinamicCell" data-id="' + i + '">-</div>';
@@ -46,17 +45,24 @@ let project = {
 
             let cell = JSON.parse(localStorage.getItem('local')),
                 local2 = JSON.parse(localStorage.getItem('local2')),
-                startRowId = +cell[cell.length - 2].rowDataId,
-                startCellId = +cell[cell.length - 2].cellDataId,
+                startRow2 = +cell[cell.length - 1].rowDataId,
                 forShiftRow = +local2[0].forShiftRow,
                 forShiftCell = +local2[0].forShiftCell,
                 endRowId = +cells.closest('.row').attr('data-id'),
                 endCellId = +cells.attr('data-id'),
-                dinamicCell = $('.dinamicCell');
+                dinamicCell = $('.dinamicCell'),
+                lastItem = $('.last'),
+                lastItemCell = lastItem.attr('data-id');
+
+            console.log(startRow2);
 
             if(!shiftPressed) {
                 dinamicCell.removeClass('last');
                 cells.addClass('last');
+            }
+
+            if(shiftPressed && !ctrlPressed) {
+                dinamicCell.removeClass('selected');
             }
 
             if(!shiftPressed && !ctrlPressed) {
@@ -72,35 +78,19 @@ let project = {
                     let valCellId = +$(value).attr('data-id'),
                         valRowId = +$(value).closest('.row').attr('data-id');
 
-                    if(valRowId >= forShiftRow || valCellId > forShiftCell && valRowId === forShiftRow) {
-                        $(value).removeClass('selected');
-                    }
-                    if(valRowId <= forShiftRow || valCellId < forShiftCell && valRowId === forShiftRow) {
-                        $(value).removeClass('selected');
-                    }
-
                     switch (true) {
-                        case valCellId >= endCellId && valRowId === endRowId && endRowId < startRowId || valRowId > endRowId && valRowId < startRowId || valCellId <= startCellId && valRowId === startRowId && endRowId < startRowId:
+                        case valCellId >= endCellId && valRowId === endRowId && endRowId < forShiftRow || valRowId > endRowId && valRowId < forShiftRow || valCellId <= forShiftCell && valRowId === forShiftRow && endRowId < forShiftRow:
                             $(value).addClass('selected');
-
                             break;
-                        case valCellId <= endCellId && valRowId === endRowId && startRowId < endRowId || valRowId > startRowId && valRowId < endRowId || valCellId >= startCellId && valRowId === startRowId && startRowId < endRowId:
+                        case valCellId <= endCellId && valRowId === endRowId && forShiftRow < endRowId || valRowId > forShiftRow && valRowId < endRowId || valCellId >= forShiftCell && valRowId === forShiftRow && forShiftRow < endRowId:
                             $(value).addClass('selected');
-
                             break;
-                        case valRowId === endRowId && valCellId >= endCellId && valCellId <= startCellId:
+                        case valRowId === endRowId && valCellId >= endCellId && valCellId <= lastItemCell:
                             $(value).addClass('selected');
-
-                            if(valCellId > forShiftCell && valRowId === forShiftRow) {
-                                $(value).removeClass('selected');
-                            }
                             break;
-                        case valRowId === endRowId && valCellId >= startCellId && valCellId <= endCellId:
+                        case valRowId === endRowId && valCellId >= lastItemCell && valCellId <= endCellId:
                             $(value).addClass('selected');
 
-                            if(valCellId < forShiftCell && valRowId === forShiftRow) {
-                                $(value).removeClass('selected');
-                            }
                             break;
                     }
                 });
@@ -215,7 +205,7 @@ let project = {
         });
 
         $(document).on('click', 'body', (event) => {
-            if(event.target.id !== 'table' && !$(event.target).is('.dinamicCell')) {
+            if(event.target.id !== 'table' && !$(event.target).is('.dinamicCell') && !$(event.target).is('#selectAll')) {
                 $('.dinamicCell').removeClass('selected');
                 localStorage.removeItem('local');
                 localStorage.removeItem('local2');
@@ -231,8 +221,9 @@ let project = {
     selectMethods: () => {
         $(document).on('change', $('#selectAll'), () => {
             $.each($('.dinamicCell'), (key, value) => {
-                $(value).toggleClass('selected');
                 if($(value).hasClass('purple') || $(value).hasClass('green')) {
+                    $(value).removeClass('selected');
+                } else {
                     $(value).toggleClass('selected');
                 }
             })
