@@ -5,6 +5,8 @@ let project = {
     mousePositionY: 0,
     mouseNewPositionX: 0,
     mouseNewPositionY: 0,
+    arr1: [],
+    arr2: [],
 
     initDivs: () => {
         let html = '';
@@ -42,8 +44,8 @@ let project = {
             $('#selectAll').prop('checked', false);
             let cells = $(event.target);
             // todo remove all from local storage
-            let cell = JSON.parse(localStorage.getItem('local')),
-                local2 = JSON.parse(localStorage.getItem('local2')),
+            let cell = project.arr1,
+                local2 = project.arr2,
                 startCell2 = +cell[cell.length - 1].cellDataId,
                 forShiftCell = +local2[0].forShiftCell,
                 dynamicCell = $('.dynamicCell');
@@ -61,19 +63,13 @@ let project = {
                 project.deleteSelected();
                 cells.addClass('selected');
             } else if(shiftPressed) {
-                //todo toggle class
                 if(cells.hasClass('selected')) {
-                    cells.removeClass('selected')
-                } else cells.addClass('selected');
-
+                    cells.toggleClass('selected');
+                }
 
                 $.each(dynamicCell, (key, value) => {
                     let valCellId = +$(value).attr('data-id');
-                    // todo ||
-                    if(valCellId <= forShiftCell && valCellId >= startCell2 && startCell2 < forShiftCell) {
-                        $(value).addClass('selected');
-                    }
-                    if(valCellId >= forShiftCell && valCellId <= startCell2 && startCell2 > forShiftCell) {
+                    if(valCellId <= forShiftCell && valCellId >= startCell2 && startCell2 < forShiftCell || valCellId >= forShiftCell && valCellId <= startCell2 && startCell2 > forShiftCell) {
                         $(value).addClass('selected');
                     }
                 });
@@ -126,18 +122,10 @@ let project = {
             let endPositionX = e2.pageX,
                 endPositionY = e2.pageY,
                 dynamicCell = $('.dynamicCell'),
-                local = JSON.parse(localStorage.getItem('local')),
-                local2 = JSON.parse(localStorage.getItem('local2')),
+                local = project.arr1,
+                local2 = project.arr2,
                 cellDataid = $(e2.target).attr('data-id'),
                 forShiftCell = null;
-
-            if(!local2) {
-                local2 = [];
-            }
-
-            if(!local) {
-                local = [];
-            }
 
             local.push({
                 cellDataId: cellDataid
@@ -160,34 +148,33 @@ let project = {
                 local.shift();
             }
 
-            localStorage.setItem('local', JSON.stringify(local));
-            localStorage.setItem('local2', JSON.stringify(local2));
-
             $.each(dynamicCell, (key, value) => {
                 let cellTop = $(value).position().top,
                     cellLeft = $(value).position().left,
                     cellsTop = dynamicCell.position().top,
-                    cellsLeft = dynamicCell.position().left;
+                    cellsLeft = dynamicCell.position().left,
+                    tableTop = project.table.offset().top,
+                    tableLeft = project.table.offset().left;
 
-                if(cellTop >= (endPositionY - (project.table.offset().top + cellsTop))
-                    && cellTop < (project.mousePositionY - project.table.offset().top)
-                    && cellLeft >= (endPositionX - (project.table.offset().left + cellsLeft))
-                    && cellLeft < (project.mousePositionX - project.table.offset().left)
-                    || cellTop >= (endPositionY - (project.table.offset().top + cellsTop))
-                    && cellTop < (project.mousePositionY - project.table.offset().top)
-                    && cellLeft >= (project.mousePositionX - (project.table.offset().left + cellsLeft))
-                    && cellLeft < (endPositionX - project.table.offset().left))
+                if(cellTop >= (endPositionY - (tableTop + cellsTop))
+                    && cellTop < (project.mousePositionY - tableTop)
+                    && cellLeft >= (endPositionX - (tableLeft + cellsLeft))
+                    && cellLeft < (project.mousePositionX - tableLeft)
+                    || cellTop >= (endPositionY - (tableTop + cellsTop))
+                    && cellTop < (project.mousePositionY - tableTop)
+                    && cellLeft >= (project.mousePositionX - (tableLeft + cellsLeft))
+                    && cellLeft < (endPositionX - tableLeft))
                 {
                     $(value).addClass('selected');
                 }
-                if(cellTop >= (project.mousePositionY - (project.table.offset().top + cellsTop))
-                    && cellTop < (endPositionY - project.table.offset().top)
-                    && cellLeft >= (endPositionX - (project.table.offset().left + cellsLeft))
-                    && cellLeft < (project.mousePositionX - project.table.offset().left)
-                    || cellTop >= (project.mousePositionY - (project.table.offset().top + cellsTop))
-                    && cellTop < (endPositionY - project.table.offset().top)
-                    && cellLeft >= (project.mousePositionX - (project.table.offset().left + cellsLeft))
-                    && cellLeft < (endPositionX - project.table.offset().left))
+                if(cellTop >= (project.mousePositionY - (tableTop + cellsTop))
+                    && cellTop < (endPositionY - tableTop)
+                    && cellLeft >= (endPositionX - (tableLeft + cellsLeft))
+                    && cellLeft < (project.mousePositionX - tableLeft)
+                    || cellTop >= (project.mousePositionY - (tableTop + cellsTop))
+                    && cellTop < (endPositionY - tableTop)
+                    && cellLeft >= (project.mousePositionX - (tableLeft + cellsLeft))
+                    && cellLeft < (endPositionX - tableLeft))
                 {
                     $(value).addClass('selected');
                 }
@@ -201,8 +188,6 @@ let project = {
         $(document).on('click', 'body', (event) => {
             if(event.target.id !== 'table' && !$(event.target).is('.dynamicCell') && !$(event.target).is('#cells') && !$(event.target).is('#selectAll')) {
                 $('.dynamicCell').removeClass('selected');
-                localStorage.removeItem('local');
-                localStorage.removeItem('local2');
                 $('#selectAll').prop('checked', false);
             }
         })
