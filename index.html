@@ -14,7 +14,11 @@
             <div class="item purple" id="purple"></div>
             <div class="item green" id="green"></div>
             <div class="item">
-                <input type="checkbox" name="check" id="selectAll">
+                <input type="checkbox" name="check" id="selectAll" class="float-left">
+                <label for="selectAll" class="float-left">Select All</label>
+            </div>
+            <div class="item reset" id="reset">
+                <button class="btn btn-warning text-white">Reset All Cells</button>
             </div>
         </div>
         <div id="table" class="mt-3">
@@ -40,32 +44,19 @@
                 <div class="cell">19</div>
                 <div class="cell">20</div>
             </div>
-            <div class="row dinamic flex-nowrap" data-id="1">
-                <div class="cell">2</div>
-            </div>
-            <div class="row dinamic flex-nowrap" data-id="2">
-                <div class="cell">3</div>
-            </div>
-            <div class="row dinamic flex-nowrap" data-id="3">
-                <div class="cell">4</div>
-            </div>
-            <div class="row dinamic flex-nowrap" data-id="4">
-                <div class="cell">5</div>
-            </div>
-            <div class="row dinamic flex-nowrap" data-id="5">
-                <div class="cell">6</div>
-            </div>
-            <div class="row dinamic flex-nowrap" data-id="6">
-                <div class="cell">7</div>
-            </div>
-            <div class="row dinamic flex-nowrap" data-id="7">
-                <div class="cell">8</div>
-            </div>
-            <div class="row dinamic flex-nowrap" data-id="8">
-                <div class="cell">9</div>
-            </div>
-            <div class="row dinamic flex-nowrap" data-id="9">
-                <div class="cell">10</div>
+            <div class="row flex-nowrap big">
+                <div class="row flex-column">
+                    <div class="cell">2</div>
+                    <div class="cell">3</div>
+                    <div class="cell">4</div>
+                    <div class="cell">5</div>
+                    <div class="cell">6</div>
+                    <div class="cell">7</div>
+                    <div class="cell">8</div>
+                    <div class="cell">9</div>
+                    <div class="cell">10</div>
+                </div>
+                <div id="cells"></div>
             </div>
         </div>
     </div>

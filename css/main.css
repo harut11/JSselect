@@ -20,8 +20,10 @@
   user-select: none;
 }
 #table .row {
-  width: 100%;
   margin: 0;
+}
+#table .row.big {
+  width: 100%;
 }
 #table .row .cell {
   width: 55.4px;
@@ -30,10 +32,11 @@
   line-height: 45px;
   text-align: center;
 }
-#table .row .cell.dinamicCell {
+#table .row .cell.dynamicCell {
   border: 1px solid #fff;
+  float: left;
 }
-#table .row .cell.dinamicCell.selected {
+#table .row .cell.dynamicCell.selected {
   background-color: deepskyblue;
 }
 #table .selectDiv {
@@ -54,6 +57,12 @@
   line-height: 30px;
   text-align: center;
   border-radius: 40%;
+  margin: 10px;
+}
+#controls .item:nth-child(3) {
+  width: 100px;
+}
+#controls #selectAll {
   margin: 10px;
 }
 

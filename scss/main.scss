@@ -18,16 +18,19 @@
   position: relative;
   user-select: none;
   .row {
-    width: 100%;
     margin: 0;
+    &.big {
+      width: 100%;
+    }
     .cell {
       width: 55.4px;
       height: 45px;
       border: 1px solid #eee;
       line-height: 45px;
       text-align: center;
-      &.dinamicCell {
+      &.dynamicCell {
         border: 1px solid #fff;
+        float: left;
         &.selected {
           background-color: deepskyblue;
         }
@@ -52,6 +55,12 @@
     line-height: 30px;
     text-align: center;
     border-radius: 40%;
+    margin: 10px;
+    &:nth-child(3) {
+      width: 100px;
+    }
+  }
+  #selectAll {
     margin: 10px;
   }
 }
